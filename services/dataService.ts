@@ -1,6 +1,6 @@
 
-import { DashboardData, FunnelStage, ClientLead, CreativePlayback } from '../types';
-import { supabase } from './supabase';
+import { DashboardData, FunnelStage, ClientLead, CreativePlayback } from '../types.ts';
+import { supabase } from './supabase.ts';
 
 export const parseNumeric = (val: any): number => {
   if (val === null || val === undefined || val === "") return 0;

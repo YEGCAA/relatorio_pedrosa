@@ -16,12 +16,12 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 
-import { ASSETS, FORMATTERS } from './constants';
-import { fetchData, processSupabaseData, parseNumeric } from './services/dataService';
-import { DashboardData, LoadingState, UserAuth, ClientLead, DashboardGoals, GoalMode, CreativePlayback } from './types';
-import { FunnelChartComponent } from './components/FunnelChartComponent';
-import { KPICard, KPIStatus } from './components/KPICard';
-import { supabase } from './services/supabase';
+import { ASSETS, FORMATTERS } from './constants.ts';
+import { fetchData, processSupabaseData, parseNumeric } from './services/dataService.ts';
+import { DashboardData, LoadingState, UserAuth, ClientLead, DashboardGoals, GoalMode, CreativePlayback } from './types.ts';
+import { FunnelChartComponent } from './components/FunnelChartComponent.tsx';
+import { KPICard, KPIStatus } from './components/KPICard.tsx';
+import { supabase } from './services/supabase.ts';
 
 const getRowValue = (row: any, possibleKeys: string[]) => {
   if (!row) return null;
@@ -440,49 +440,46 @@ const App: React.FC = () => {
               <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-4 rounded-2xl flex-1 min-w-[300px] border border-slate-200 dark:border-slate-800"><Calendar size={18} className="text-primary" /><div className="flex-1 flex gap-4"><div className="flex-1"><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic mb-0.5">Início:</p><input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full bg-transparent border-none text-xs font-bold dark:text-white outline-none italic cursor-pointer" /></div><div className="flex-1"><p className="text-[8px] font-black text-slate-400 uppercase tracking-widest italic mb-0.5">Fim:</p><input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="w-full bg-transparent border-none text-xs font-bold dark:text-white outline-none italic cursor-pointer" /></div></div></div>
             </div>
             
-            <div className="bg-white dark:bg-slate-800 rounded-[32px] border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col divide-y divide-slate-100 dark:divide-slate-700">
-                <div className="grid grid-cols-5 divide-x divide-slate-100 dark:divide-slate-700">
-                    {[
-                        { title: "Investimento", val: FORMATTERS.currency(data.metrics.totalSpend), icon: <DollarSign size={14}/>, meta: FORMATTERS.currency(scaledGoals.amountSpent), status: statusMap.amountSpent },
-                        { title: "Alcance", val: FORMATTERS.number(data.metrics.marketingMetrics.reach), icon: <ReachIcon size={14}/>, meta: "Único" },
-                        { title: "Impressões", val: FORMATTERS.number(data.metrics.marketingMetrics.impressions), icon: <ReachIcon size={14}/>, meta: "Visualizações" },
-                        { title: "Frequência", val: data.metrics.marketingMetrics.frequency.toFixed(2), icon: <RefreshCw size={14}/>, meta: scaledGoals.frequency.toFixed(1), status: statusMap.frequency },
-                        { title: "CPM", val: FORMATTERS.currency(data.metrics.marketingMetrics.cpm), icon: <Percent size={14}/>, meta: FORMATTERS.currency(scaledGoals.cpm), status: statusMap.cpm }
-                    ].map((kpi, idx) => (
-                        <div key={idx} className="px-8 py-6 group hover:bg-slate-50 dark:hover:bg-slate-950/50 transition-colors">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="text-primary opacity-60 group-hover:opacity-100 transition-opacity">{kpi.icon}</div>
-                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">{kpi.title}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg font-black text-slate-800 dark:text-white italic tracking-tighter leading-none">{kpi.val}</span>
-                                {kpi.status && <StatusBadge status={kpi.status} />}
-                            </div>
-                            <div className="mt-2 text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase italic">Meta: {kpi.meta}</div>
-                        </div>
-                    ))}
-                </div>
-                <div className="grid grid-cols-5 divide-x divide-slate-100 dark:divide-slate-700">
-                    {[
-                        { title: "Cliques", val: FORMATTERS.number(data.metrics.marketingMetrics.clicks), icon: <MousePointer2 size={14}/>, meta: "Cliques no Link" },
-                        { title: "CPC", val: FORMATTERS.currency(data.metrics.marketingMetrics.cpc), icon: <DollarSign size={14}/>, meta: "Custo Médio" },
-                        { title: "CTR", val: FORMATTERS.percent(data.metrics.marketingMetrics.ctr), icon: <Percent size={14}/>, meta: FORMATTERS.percent(scaledGoals.ctr), status: statusMap.ctr },
-                        { title: "Leads (Plataforma)", val: FORMATTERS.number(data.metrics.marketingMetrics.cpl > 0 ? data.metrics.totalSpend / data.metrics.marketingMetrics.cpl : 0), icon: <Users size={14}/>, meta: "Atribuídos" },
-                        { title: "CPL", val: FORMATTERS.currency(data.metrics.marketingMetrics.cpl), icon: <CplIcon size={14}/>, meta: FORMATTERS.currency(scaledGoals.cpl), status: statusMap.cpl }
-                    ].map((kpi, idx) => (
-                        <div key={idx} className="px-8 py-6 group hover:bg-slate-50 dark:hover:bg-slate-950/50 transition-colors">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className="text-primary opacity-60 group-hover:opacity-100 transition-opacity">{kpi.icon}</div>
-                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">{kpi.title}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-lg font-black text-slate-800 dark:text-white italic tracking-tighter leading-none">{kpi.val}</span>
-                                {kpi.status && <StatusBadge status={kpi.status} />}
-                            </div>
-                            <div className="mt-2 text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase italic">Meta: {kpi.meta}</div>
-                        </div>
-                    ))}
-                </div>
+            {/* Tabela Técnica Sheets View */}
+            <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-200 dark:border-slate-700 shadow-xl overflow-hidden h-[500px] flex flex-col">
+              <div className="p-8 border-b bg-slate-50 dark:bg-slate-950/20 flex items-center justify-between">
+                 <h3 className="text-xl font-black italic uppercase tracking-tighter">Sheets View - Granularidade Técnica</h3>
+                 <div className="text-[10px] font-black uppercase italic text-slate-400">Total de Registros: {data.rawSample?.length || 0}</div>
+              </div>
+              <div className="overflow-auto flex-1 custom-scrollbar">
+                <table className="w-full text-left border-collapse table-fixed min-w-[1800px]">
+                  <thead className="sticky top-0 z-10 bg-slate-100 dark:bg-slate-800 border-b">
+                    <tr className="text-[10px] font-black text-slate-500 uppercase italic">
+                       <th className="py-5 px-6 w-32 border-r">Dia</th>
+                       <th className="py-5 px-6 w-64 border-r">Campanha</th>
+                       <th className="py-5 px-6 w-64 border-r">Anúncio</th>
+                       <th className="py-5 px-4 w-28 text-center border-r">Investimento</th>
+                       <th className="py-5 px-4 w-24 text-center border-r">Cliques</th>
+                       <th className="py-5 px-4 w-24 text-center border-r">CTR</th>
+                       <th className="py-5 px-4 w-24 text-center border-r text-emerald-600">Leads</th>
+                       <th className="py-5 px-4 w-28 text-center text-primary">CPL</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y dark:divide-slate-800">
+                    {(data.rawSample || []).map((row, i) => {
+                       const leads = parseNumeric(getRowValue(row, ["leads", "results", "resultados"]));
+                       const spend = parseNumeric(getRowValue(row, ["Amount Spent", "investimento", "spent"]));
+                       return (
+                         <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                           <td className="py-4 px-6 text-[10px] font-bold border-r italic">{getRowValue(row, ["Date", "dia"])}</td>
+                           <td className="py-4 px-6 text-[11px] font-black text-primary border-r truncate italic">{getRowValue(row, CAMPAIGN_KEYS)}</td>
+                           <td className="py-4 px-6 text-[11px] font-bold border-r truncate italic">{getRowValue(row, AD_KEYS)}</td>
+                           <td className="py-4 px-4 text-center border-r italic">{FORMATTERS.currency(spend)}</td>
+                           <td className="py-4 px-4 text-center border-r">{parseNumeric(getRowValue(row, ["Link Clicks"]))}</td>
+                           <td className="py-4 px-4 text-center border-r">{FORMATTERS.percent(parseNumeric(getRowValue(row, ["CTR"])))}</td>
+                           <td className="py-4 px-4 text-center border-r text-emerald-600 font-black">{leads}</td>
+                           <td className="py-4 px-4 text-center text-primary font-black italic">{leads > 0 ? FORMATTERS.currency(spend/leads) : '---'}</td>
+                         </tr>
+                       );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             <div className="bg-white dark:bg-slate-800 p-12 rounded-[40px] border border-slate-200 dark:border-slate-700 shadow-sm relative overflow-hidden">
@@ -495,14 +492,6 @@ const App: React.FC = () => {
                       <h3 className="text-3xl font-black text-slate-800 dark:text-white uppercase italic tracking-tighter leading-none mb-2">Monitor de Retenção de Vídeo</h3>
                       <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] italic">Análise técnica de queda de audiência por marcos de visualização</p>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-950 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-inner">
-                    {['3s', '25%', '50%', '75%', '100%'].map((m, i) => (
-                        <div key={i} className="flex flex-col items-center gap-1.5 px-3 border-r last:border-none border-slate-200 dark:border-slate-800">
-                            <div className={`w-6 h-1.5 rounded-full ${i === 0 ? 'bg-primary/20' : i === 4 ? 'bg-primary shadow-lg shadow-primary/20' : 'bg-primary/50'}`}></div>
-                            <span className="text-[8px] font-black text-slate-400 uppercase">{m}</span>
-                        </div>
-                    ))}
                   </div>
                 </div>
 
@@ -527,12 +516,6 @@ const App: React.FC = () => {
                             </div>
                             <div className="flex flex-col gap-1">
                               <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic">{FORMATTERS.number(creative.views3s)} visualizações totais</p>
-                              {creative.date && (
-                                <div className="flex items-center gap-1.5 mt-1.5 opacity-60">
-                                  <Calendar size={10} className="text-primary" />
-                                  <p className="text-[8px] font-black text-slate-500 dark:text-slate-400 uppercase italic tracking-tighter">Ativo em: {creative.date}</p>
-                                </div>
-                              )}
                             </div>
                           </div>
                           <div className="text-right">
@@ -542,14 +525,8 @@ const App: React.FC = () => {
                         </div>
 
                         <div className="flex-1 flex items-end justify-between h-44 gap-3 px-2 mb-6 relative">
-                          <div className="absolute inset-x-0 top-0 h-full flex flex-col justify-between pointer-events-none opacity-5">
-                             {[...Array(5)].map((_, i) => <div key={i} className="w-full h-px bg-slate-400"></div>)}
-                          </div>
                           {milestones.map((m, mIdx) => (
                             <div key={mIdx} className="flex-1 flex flex-col items-center justify-end h-full relative group/bar">
-                                <div className="opacity-0 group-hover/bar:opacity-100 absolute -top-12 bg-slate-900 text-white text-[10px] px-3 py-1.5 rounded-xl font-black shadow-2xl z-30 transition-all scale-75 group-hover/bar:scale-100 whitespace-nowrap">
-                                    {FORMATTERS.number(m.value)}
-                                </div>
                                 <div 
                                     className={`w-full rounded-t-xl transition-all duration-1000 ease-out shadow-sm ${mIdx === 0 ? 'bg-primary/10' : mIdx === milestones.length - 1 ? 'bg-primary' : 'bg-primary/50'}`} 
                                     style={{ height: `${Math.max(m.percent, 8)}%` }}
@@ -570,52 +547,9 @@ const App: React.FC = () => {
                   }) : (
                     <div className="col-span-full py-40 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[40px]">
                       <Video size={64} className="mx-auto text-slate-200 mb-8" />
-                      <p className="text-slate-400 font-black italic uppercase text-lg tracking-widest">Aguardando dados para compilação visual</p>
+                      <p className="text-slate-400 font-black italic uppercase text-lg tracking-widest">Aguardando dados</p>
                     </div>
                   )}
-                </div>
-              </div>
-
-              <div className="bg-white dark:bg-slate-800 p-12 rounded-[40px] border border-slate-200 dark:border-slate-700 shadow-sm mt-8">
-                <div className="flex items-center justify-between mb-12 px-4">
-                  <div className="flex items-center gap-6">
-                    <div className="p-4 bg-primary/10 rounded-2xl text-primary"><Award size={32} /></div>
-                    <div><h3 className="text-2xl font-black text-slate-800 dark:text-white uppercase italic tracking-tighter leading-none mb-1">Ranking de Performance por Criativo</h3><p className="text-xs font-bold text-slate-400 uppercase tracking-widest italic">Análise Qualitativa: Leads > CPL > CTR</p></div>
-                  </div>
-                </div>
-                <div className="overflow-x-auto custom-scrollbar">
-                  <table className="w-full text-left border-separate border-spacing-0">
-                    <thead>
-                      <tr className="bg-slate-50 dark:bg-slate-900/50">
-                        <th className="py-6 px-10 rounded-tl-3xl text-[10px] font-black text-slate-400 uppercase italic tracking-widest border-b border-slate-200 dark:border-slate-800">Origem & Peça Publicitária</th>
-                        <th className="py-6 px-6 text-[10px] font-black text-slate-400 uppercase italic tracking-widest border-b border-slate-200 dark:border-slate-800 text-center">Leads</th>
-                        <th className="py-6 px-6 text-[10px] font-black text-slate-400 uppercase italic tracking-widest border-b border-slate-200 dark:border-slate-800 text-center">Investimento</th>
-                        <th className="py-6 px-6 text-[10px] font-black text-slate-400 uppercase italic tracking-widest border-b border-slate-200 dark:border-slate-800 text-center">CPL</th>
-                        <th className="py-6 px-6 text-[10px] font-black text-slate-400 uppercase italic tracking-widest border-b border-slate-200 dark:border-slate-800 text-center">CTR</th>
-                        <th className="py-6 px-10 rounded-tr-3xl text-[10px] font-black text-slate-400 uppercase italic tracking-widest border-b border-slate-200 dark:border-slate-800 text-right">Performance</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {adRankingData.length > 0 ? adRankingData.map((item, index) => {
-                        const cplStatus = calculateStatus(item.cpl, scaledGoals.cpl, 'lower-better');
-                        const ctrStatus = calculateStatus(item.ctr, scaledGoals.ctr, 'higher-better');
-                        const isTopWinner = index === 0 && item.leads > 0;
-                        return (
-                          <tr key={index} className="group hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-all border-b border-slate-100 dark:border-slate-800/50 last:border-none">
-                            <td className="py-6 px-10">
-                                <p className="text-[10px] font-black text-primary uppercase italic truncate max-w-[220px] mb-1">{item.campaign}</p>
-                                <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200 italic line-clamp-1">{item.ad}</p>
-                            </td>
-                            <td className="py-6 px-6 text-center"><span className="text-base font-black text-slate-900 dark:text-white italic">{FORMATTERS.number(item.leads)}</span></td>
-                            <td className="py-6 px-6 text-center"><span className="text-xs font-bold text-slate-500">{FORMATTERS.currency(item.spend)}</span></td>
-                            <td className="py-6 px-6 text-center"><div className="flex flex-col items-center gap-1.5"><span className={`text-xs font-black italic ${item.cpl <= scaledGoals.cpl ? 'text-emerald-500' : 'text-slate-500'}`}>{FORMATTERS.currency(item.cpl)}</span><StatusBadge status={cplStatus} /></div></td>
-                            <td className="py-6 px-6 text-center"><div className="flex flex-col items-center gap-1.5"><span className="text-xs font-bold text-slate-600 dark:text-slate-300">{FORMATTERS.percent(item.ctr)}</span><StatusBadge status={ctrStatus} /></div></td>
-                            <td className="py-6 px-10 text-right">{isTopWinner ? (<div className="inline-flex items-center gap-2 bg-emerald-500 px-5 py-2.5 rounded-2xl shadow-lg shadow-emerald-500/20"><Trophy size={16} className="text-white" /><span className="text-[10px] font-black text-white uppercase italic tracking-widest">CAMPEÃO</span></div>) : index < 3 && item.leads > 0 ? (<div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-xl"><Star size={14} className="text-primary fill-primary" /><span className="text-[9px] font-black text-primary uppercase italic">TOP {index + 1}</span></div>) : (<div className="inline-flex px-3 py-1 rounded-xl text-[9px] font-black uppercase italic text-slate-400 border border-slate-200 dark:border-slate-700">NORMAL</div>)}</td>
-                          </tr>
-                        );
-                      }) : (<tr><td colSpan={6} className="py-40 text-center"><Database size={48} className="mx-auto text-slate-200 mb-6" /><p className="text-xs font-black text-slate-400 uppercase italic tracking-widest opacity-60">Aguardando dados para gerar o ranking</p></td></tr>)}
-                    </tbody>
-                  </table>
                 </div>
               </div>
             </div>
