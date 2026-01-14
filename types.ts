@@ -80,7 +80,6 @@ export interface DashboardMetrics {
     impressions: number;
     clicks: number;
     landingPageConvRate: number;
-    platformLeads: number;
   };
   salesMetrics: {
     avgResponseTime: string; 
