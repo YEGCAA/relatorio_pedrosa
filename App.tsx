@@ -17,7 +17,7 @@ import {
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 
 import { ASSETS, FORMATTERS } from './constants';
-import { fetchData, processSupabaseData } from './services/dataService';
+import { fetchData, processSupabaseData, parseNumeric } from './services/dataService';
 import { DashboardData, LoadingState, UserAuth, ClientLead, DashboardGoals, GoalMode, CreativePlayback } from './types';
 import { FunnelChartComponent } from './components/FunnelChartComponent';
 import { KPICard, KPIStatus } from './components/KPICard';
@@ -193,7 +193,6 @@ const App: React.FC = () => {
     return { campaigns, adSets, ads };
   }, [baseData, selectedCampaigns, selectedAdSets]);
 
-  // Efeito para disparar animação de filtragem
   useEffect(() => {
     setIsFiltering(true);
     const timer = setTimeout(() => setIsFiltering(false), 300);

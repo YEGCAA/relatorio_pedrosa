@@ -2,7 +2,7 @@
 import { DashboardData, FunnelStage, ClientLead, CreativePlayback } from '../types';
 import { supabase } from './supabase';
 
-const parseNumeric = (val: any): number => {
+export const parseNumeric = (val: any): number => {
   if (val === null || val === undefined || val === "") return 0;
   if (typeof val === 'number') return val;
   
@@ -216,11 +216,7 @@ export const processSupabaseData = (rows: any[], fetchedTables: string[] = [], r
     }
   });
 
-  // O total de Leads Geral (Overview) vem do CRM
   const realTotalLeads = leadsList.length;
-
-  // No Marketing, o CPL é baseado nos leads REPORTADOS pelas plataformas quando houver filtros,
-  // mas se não houver filtro, usamos os leads de marketing capturados.
   const leadsForMarketingCalculations = totalMarketingLeads > 0 ? totalMarketingLeads : realTotalLeads;
 
   const averageCPL = leadsForMarketingCalculations > 0 ? totalSpend / leadsForMarketingCalculations : 0;
@@ -246,7 +242,7 @@ export const processSupabaseData = (rows: any[], fetchedTables: string[] = [], r
       preLaunchSoldRatio: 0,
       conversionRateLeadToSale: 0,
       qualifiedLeadRatio: 0,
-      cac: averageCPL, // CAC/CPL Base
+      cac: averageCPL, 
       totalUnitsSold: countVendasID14,
       totalLeads: realTotalLeads,
       totalSpend: totalSpend,
